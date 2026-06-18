@@ -1,0 +1,14 @@
+import 'react';
+
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    'gs-x'?: string | number;
+    'gs-y'?: string | number;
+    'gs-w'?: string | number;
+    'gs-h'?: string | number;
+    'gs-min-w'?: string | number;
+    'gs-min-h'?: string | number;
+    'gs-no-resize'?: string;
+    'gs-no-move'?: string;
+  }
+}
