@@ -102,6 +102,11 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
       },
       containerRef.current,
     );
+    // GridStack settles cell heights asynchronously; ECharts reads container
+    // dimensions at mount and gets 0. Two rAFs let the layout commit first.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => window.dispatchEvent(new Event("resize")))
+    );
     return () => {
       gridRef.current?.destroy(false);
       gridRef.current = null;
