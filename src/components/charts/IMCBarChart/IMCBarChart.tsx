@@ -1,4 +1,4 @@
-import ReactECharts from "echarts-for-react";
+import EChart from "../EChart";
 import * as echarts from "echarts";
 import { monthlyBMI } from "../../../data/mockData";
 import {
@@ -84,7 +84,7 @@ export default function IMCBarChart({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <ReactECharts
+    <EChart
       option={option}
       style={{ height: "100%", width: "100%" }}
       opts={{ renderer: "canvas" }}

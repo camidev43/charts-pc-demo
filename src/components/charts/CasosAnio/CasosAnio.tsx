@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react';
+import EChart from '../EChart';
 import * as echarts from 'echarts';
 import { casosAnuales } from '../../../data/mockData';
 import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
@@ -66,6 +66,6 @@ export default function CasosAnio({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <ReactECharts option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }} />
+    <EChart option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }} />
   );
 }

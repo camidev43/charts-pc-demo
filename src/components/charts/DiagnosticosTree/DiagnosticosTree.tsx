@@ -1,4 +1,4 @@
-import ReactECharts from "echarts-for-react";
+import EChart from "../EChart";
 import { diagnostics } from "../../../data/mockData";
 import { useTheme, TOOLTIP_GLASS } from "../../../context/ThemeContext";
 
@@ -66,7 +66,7 @@ export default function DiagnosticosTree({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <ReactECharts
+    <EChart
       option={option}
       style={{ height: "100%", width: "100%" }}
       opts={{ renderer: "canvas" }}

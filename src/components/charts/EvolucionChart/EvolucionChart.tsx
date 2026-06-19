@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ReactECharts from 'echarts-for-react';
+import EChart from '../EChart';
 import * as echarts from 'echarts';
 import { evolucionSemana, evolucionMes, weekLabels } from '../../../data/mockData';
 import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
@@ -81,7 +81,7 @@ export default function EvolucionChart({ expanded }: { expanded?: boolean }) {
         ))}
       </div>
       <div className={styles.chart_area}>
-        <ReactECharts
+        <EChart
           key={tab}
           option={option}
           style={{ height: '100%', width: '100%' }}

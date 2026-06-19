@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react';
+import EChart from '../EChart';
 import { patientStats } from '../../../data/mockData';
 import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
 
@@ -55,6 +55,6 @@ export default function RiesgoDonut({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <ReactECharts option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
+    <EChart option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
   );
 }

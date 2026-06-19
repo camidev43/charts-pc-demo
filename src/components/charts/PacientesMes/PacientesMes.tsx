@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react';
+import EChart from '../EChart';
 import { patientStats } from '../../../data/mockData';
 import { useTheme, chartColors } from '../../../context/ThemeContext';
 import styles from './PacientesMes.module.css';
@@ -60,7 +60,7 @@ export default function PacientesMes() {
   return (
     <div className={styles.root}>
       <div className={styles.gauge_area}>
-        <ReactECharts option={gaugeOption} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
+        <EChart option={gaugeOption} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
       </div>
       <div className={styles.chips}>
         {[

@@ -1,4 +1,4 @@
-import ReactECharts from "echarts-for-react";
+import EChart from "../EChart";
 import * as echarts from "echarts";
 import { actividadData } from "../../../data/mockData";
 import {
@@ -85,7 +85,7 @@ export default function ActividadChart({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <ReactECharts
+    <EChart
       option={option}
       style={{ height: "100%", width: "100%" }}
       opts={{ renderer: "canvas" }}
