@@ -10,5 +10,7 @@ declare module 'react' {
     'gs-min-h'?: string | number;
     'gs-no-resize'?: string;
     'gs-no-move'?: string;
+    'gs-max-w'?: string | number;
+    'gs-max-h'?: string | number;
   }
 }

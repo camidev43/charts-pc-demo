@@ -1,20 +1,45 @@
-import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import LandingCard from './components/LandingCard';
-import Dashboard from './components/Dashboard';
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import { ThemeContext, Theme } from "./context/ThemeContext";
+import LandingCard from "./components/LandingCard";
+import Dashboard from "./components/Dashboard";
 
 export default function App() {
-  const [view, setView] = useState<'card' | 'dashboard'>('card');
+  const [view, setView] = useState<"card" | "dashboard">("card");
+  const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#080410' }}>
-      <AnimatePresence mode="wait">
-        {view === 'card' ? (
-          <LandingCard key="card" onExplore={() => setView('dashboard')} />
-        ) : (
-          <Dashboard key="dashboard" onBack={() => setView('card')} />
-        )}
-      </AnimatePresence>
-    </div>
+    <ThemeContext.Provider value={theme}>
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          overflow: "hidden",
+          background: "var(--bg-page)",
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {view === "card" ? (
+            <LandingCard
+              key="card"
+              onExplore={() => setView("dashboard")}
+              onToggleTheme={toggleTheme}
+            />
+          ) : (
+            <Dashboard
+              key="dashboard"
+              onBack={() => setView("card")}
+              onToggleTheme={toggleTheme}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </ThemeContext.Provider>
   );
 }

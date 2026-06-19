@@ -1,32 +1,85 @@
-import { useEffect, useRef, useState, ReactNode } from 'react';
-import { GridStack } from 'gridstack';
-import 'gridstack/dist/gridstack.min.css';
-import 'gridstack/dist/gridstack-extra.min.css';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState, ReactNode } from "react";
+import { GridStack } from "gridstack";
+import "gridstack/dist/gridstack.min.css";
+import "gridstack/dist/gridstack-extra.min.css";
+import { motion } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
 
-import WidgetCard from './WidgetCard';
-import Drawer from './Drawer';
-import DistribucionChart from './charts/DistribucionChart';
-import IMCBarChart from './charts/IMCBarChart';
-import RadarChart from './charts/RadarChart';
-import EstadisticasCard from './charts/EstadisticasCard';
-import EvolucionChart from './charts/EvolucionChart';
-import PacientesMes from './charts/PacientesMes';
-import DiagnosticosTree from './charts/DiagnosticosTree';
-import RiesgoDonut from './charts/RiesgoDonut';
-import ActividadChart from './charts/ActividadChart';
-import FactoresLine from './charts/FactoresLine';
-
-const gs = (x: number, y: number, w: number, h: number) => ({
-  'gs-x': String(x), 'gs-y': String(y), 'gs-w': String(w), 'gs-h': String(h),
+import styles from "./Dashboard.module.css";
+import WidgetCard from "./WidgetCard";
+import Modal from "./Modal";
+import DistribucionChart from "./charts/DistribucionChart/DistribucionChart";
+import IMCBarChart from "./charts/IMCBarChart/IMCBarChart";
+import RadarChart from "./charts/RadarChart/RadarChart";
+import EstadisticasCard from "./charts/EstadisticasCard/EstadisticasCard";
+import EvolucionChart from "./charts/EvolucionChart/EvolucionChart";
+import PacientesMes from "./charts/PacientesMes/PacientesMes";
+import DiagnosticosTree from "./charts/DiagnosticosTree/DiagnosticosTree";
+import RiesgoDonut from "./charts/RiesgoDonut/RiesgoDonut";
+import ActividadChart from "./charts/ActividadChart/ActividadChart";
+import FactoresLine from "./charts/FactoresLine/FactoresLine";
+import CasosAnio from "./charts/CasosAnio/CasosAnio";
+const gs = (
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  opts: { maxW?: number; minW?: number; minH?: number } = {},
+) => ({
+  "gs-x": String(x),
+  "gs-y": String(y),
+  "gs-w": String(w),
+  "gs-h": String(h),
+  ...(opts.maxW ? { "gs-max-w": String(opts.maxW) } : {}),
+  ...(opts.minW ? { "gs-min-w": String(opts.minW) } : {}),
+  ...(opts.minH ? { "gs-min-h": String(opts.minH) } : {}),
 });
 
-interface DrawerState { title: string; subtitle: string; content: ReactNode }
+interface ModalState {
+  title: string;
+  subtitle: string;
+  content: ReactNode;
+}
 
-export default function Dashboard({ onBack }: { onBack: () => void }) {
+interface Props {
+  onBack: () => void;
+  onToggleTheme: () => void;
+}
+
+const SunIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  >
+    <circle cx="12" cy="12" r="5" />
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  >
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+  </svg>
+);
+
+export default function Dashboard({ onBack, onToggleTheme }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<GridStack | null>(null);
-  const [drawer, setDrawer] = useState<DrawerState | null>(null);
+  const [modal, setModal] = useState<ModalState | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (!containerRef.current || gridRef.current) return;
@@ -36,11 +89,18 @@ export default function Dashboard({ onBack }: { onBack: () => void }) {
         cellHeight: 82,
         margin: 8,
         animate: true,
-        draggable: { handle: '.widget-handle' },
-        resizable: { handles: 'se,sw,ne,nw,e,w,n,s' },
+        draggable: { handle: ".widget_handle" },
+        resizable: { handles: "se" },
         float: false,
+        columnOpts: {
+          breakpointForWindow: true,
+          breakpoints: [
+            { w: 768, c: 6 },
+            { w: 520, c: 1 },
+          ],
+        },
       },
-      containerRef.current
+      containerRef.current,
     );
     return () => {
       gridRef.current?.destroy(false);
@@ -49,233 +109,295 @@ export default function Dashboard({ onBack }: { onBack: () => void }) {
   }, []);
 
   const open = (title: string, subtitle: string, content: ReactNode) =>
-    setDrawer({ title, subtitle, content });
+    setModal({ title, subtitle, content });
 
-  const now = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+  const CHART_H = 400;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className={styles.page}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#F0F2F8', overflow: 'hidden' }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* HEADER */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1E1B4B 0%, #1e3a5f 100%)',
-        padding: '0 20px',
-        height: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        flexShrink: 0,
-        boxShadow: '0 2px 16px rgba(0,0,0,0.18)',
-      }}>
-        {/* Left */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: '50%',
-            background: 'rgba(124,58,237,0.3)',
-            border: '1.5px solid rgba(167,139,250,0.5)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      <div className={styles.top_bar}>
+        <div className={styles.float_left}>
+          <button className={styles.glass_btn} onClick={onBack}>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-          </div>
-          <div>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 500, letterSpacing: '0.1em' }}>INFORME CLÍNICO</p>
-            <p style={{
-              color: 'white', fontSize: 15, fontWeight: 700,
-              fontFamily: "'Playfair Display', serif",
-            }}>
-              Síndrome Metabólico
-            </p>
-          </div>
+            Volver
+          </button>
         </div>
-
-        {/* Center */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500 }}>
-            Dr. Carlos Rivera · Bogotá, Colombia
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{now}</p>
-        </div>
-
-        {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: 'rgba(16,185,129,0.15)',
-            border: '1px solid rgba(16,185,129,0.3)',
-            borderRadius: 20, padding: '5px 12px',
-          }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-            <span style={{ color: '#6EE7B7', fontSize: 11, fontWeight: 600 }}>En línea</span>
-          </div>
+        <div className={styles.float_right}>
           <button
-            onClick={onBack}
-            style={{
-              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 10, padding: '6px 14px', color: 'rgba(255,255,255,0.7)',
-              fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+            className={`${styles.glass_btn} ${styles.theme_btn}`}
+            onClick={onToggleTheme}
+            title="Cambiar tema"
           >
-            ← Volver
+            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
           </button>
         </div>
       </div>
 
-      {/* GRID */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '10px 10px 14px' }}>
+      <div className={styles.grid_wrapper}>
         <div ref={containerRef} className="grid-stack">
-
-          {/* ROW 1 */}
-          <div className="grid-stack-item" {...gs(0, 0, 4, 3)}>
+          {/* Row 1 */}
+          <div className="grid-stack-item" {...gs(0, 0, 4, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Distribución Regional"
+                title="Distribución regional"
                 subtitle="Pacientes y riesgo por departamento"
-                accentColor="#7C3AED"
-                onExpand={() => open('Distribución Regional', 'Pacientes y porcentaje de riesgo por región', <div style={{ height: 420 }}><DistribucionChart expanded /></div>)}
+                accentColor="#0A84FF"
+                onExpand={() =>
+                  open(
+                    "Distribución regional",
+                    "Pacientes y porcentaje de riesgo por región",
+                    <div style={{ height: CHART_H }}>
+                      <DistribucionChart expanded />
+                    </div>,
+                  )
+                }
               >
                 <DistribucionChart />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(4, 0, 2, 3)}>
+          <div
+            className="grid-stack-item"
+            {...gs(4, 0, 2, 3, { maxW: 4, minH: 2 })}
+          >
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="IMC Mensual"
+                title="IMC mensual"
                 subtitle="Promedio 2024"
-                accentColor="#F59E0B"
-                onExpand={() => open('IMC Mensual', 'Índice de masa corporal promedio mensual', <div style={{ height: 380 }}><IMCBarChart expanded /></div>)}
+                accentColor="#FBBF24"
+                onExpand={() =>
+                  open(
+                    "IMC mensual",
+                    "Índice de masa corporal promedio mensual",
+                    <div style={{ height: CHART_H }}>
+                      <IMCBarChart expanded />
+                    </div>,
+                  )
+                }
               >
                 <IMCBarChart />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(6, 0, 2, 3)}>
+          <div
+            className="grid-stack-item"
+            {...gs(6, 0, 2, 3, { maxW: 4, minH: 2 })}
+          >
             <div className="grid-stack-item-content">
               <WidgetCard
                 title="Indicadores"
                 subtitle="Perfil metabólico"
-                accentColor="#0EA5E9"
-                onExpand={() => open('Indicadores Metabólicos', 'Comparación con valores de referencia', <div style={{ height: 400 }}><RadarChart expanded /></div>)}
+                accentColor="#FF8A00"
+                onExpand={() =>
+                  open(
+                    "Indicadores metabólicos",
+                    "Comparación con valores de referencia",
+                    <div style={{ height: CHART_H }}>
+                      <RadarChart expanded />
+                    </div>,
+                  )
+                }
               >
                 <RadarChart />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(8, 0, 4, 3)}>
+          <div className="grid-stack-item" {...gs(8, 0, 4, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Estadísticas Clínicas"
+                title="Estadísticas clínicas"
                 subtitle="Resumen y distribución de riesgo"
-                accentColor="#10B981"
+                accentColor="#30B0C7"
                 noPadding
               >
-                <div style={{ padding: '0 12px 12px', height: '100%', boxSizing: 'border-box' }}>
+                <div
+                  style={{
+                    padding: "0 12px 12px",
+                    height: "100%",
+                    boxSizing: "border-box",
+                  }}
+                >
                   <EstadisticasCard />
                 </div>
               </WidgetCard>
             </div>
           </div>
 
-          {/* ROW 2 */}
-          <div className="grid-stack-item" {...gs(0, 3, 5, 3)}>
+          {/* Row 2 */}
+          <div className="grid-stack-item" {...gs(0, 3, 5, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Evolución Metabólica"
+                title="Evolución metabólica"
                 subtitle="Glucosa · Triglicéridos · HDL"
-                accentColor="#7C3AED"
-                onExpand={() => open('Evolución Metabólica', 'Tendencia semanal y mensual de marcadores clave', <div style={{ height: 420 }}><EvolucionChart expanded /></div>)}
+                accentColor="#FF8A00"
+                onExpand={() =>
+                  open(
+                    "Evolución metabólica",
+                    "Tendencia semanal y mensual de marcadores clave",
+                    <div style={{ height: CHART_H }}>
+                      <EvolucionChart expanded />
+                    </div>,
+                  )
+                }
               >
                 <EvolucionChart />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(5, 3, 3, 3)}>
+          <div
+            className="grid-stack-item"
+            {...gs(5, 3, 3, 3, { maxW: 5, minH: 2 })}
+          >
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Total Pacientes"
+                title="Total pacientes"
                 subtitle="Distribución por nivel de riesgo"
-                accentColor="#0EA5E9"
+                accentColor="#0A84FF"
               >
                 <PacientesMes />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(8, 3, 4, 3)}>
+          <div className="grid-stack-item" {...gs(8, 3, 4, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
                 title="Diagnósticos"
                 subtitle="Distribución por patología"
-                accentColor="#84CC16"
-                onExpand={() => open('Diagnósticos Principales', 'Distribución por categoría diagnóstica', <div style={{ height: 440 }}><DiagnosticosTree expanded /></div>)}
+                accentColor="#FBBF24"
+                onExpand={() =>
+                  open(
+                    "Diagnósticos principales",
+                    "Distribución por categoría diagnóstica",
+                    <div style={{ height: CHART_H + 40 }}>
+                      <DiagnosticosTree expanded />
+                    </div>,
+                  )
+                }
               >
                 <DiagnosticosTree />
               </WidgetCard>
             </div>
           </div>
 
-          {/* ROW 3 */}
-          <div className="grid-stack-item" {...gs(0, 6, 3, 3)}>
+          {/* Row 3 */}
+          <div className="grid-stack-item" {...gs(0, 6, 3, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Distribución de Riesgo"
+                title="Distribución de riesgo"
                 subtitle="Por nivel de severidad"
-                accentColor="#EF4444"
-                onExpand={() => open('Distribución de Riesgo', 'Porcentaje de pacientes por nivel de riesgo cardiovascular', <div style={{ height: 400 }}><RiesgoDonut expanded /></div>)}
+                accentColor="#FF3B30"
+                onExpand={() =>
+                  open(
+                    "Distribución de riesgo",
+                    "Porcentaje de pacientes por nivel de riesgo cardiovascular",
+                    <div style={{ height: CHART_H }}>
+                      <RiesgoDonut expanded />
+                    </div>,
+                  )
+                }
               >
                 <RiesgoDonut />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(3, 6, 2, 3)}>
+          <div
+            className="grid-stack-item"
+            {...gs(3, 6, 2, 3, { maxW: 4, minH: 2 })}
+          >
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Actividad Física"
+                title="Actividad física"
                 subtitle="Calorías semanales"
-                accentColor="#7C3AED"
-                onExpand={() => open('Actividad Física', 'Consumo calórico semanal de los pacientes', <div style={{ height: 380 }}><ActividadChart expanded /></div>)}
+                accentColor="#30B0C7"
+                onExpand={() =>
+                  open(
+                    "Actividad física",
+                    "Consumo calórico semanal de los pacientes",
+                    <div style={{ height: CHART_H }}>
+                      <ActividadChart expanded />
+                    </div>,
+                  )
+                }
               >
                 <ActividadChart />
               </WidgetCard>
             </div>
           </div>
 
-          <div className="grid-stack-item" {...gs(5, 6, 7, 3)}>
+          <div className="grid-stack-item" {...gs(5, 6, 4, 3, { minH: 2 })}>
             <div className="grid-stack-item-content">
               <WidgetCard
-                title="Factores de Riesgo"
+                title="Factores de riesgo"
                 subtitle="Evolución anual de marcadores metabólicos"
-                accentColor="#EC4899"
-                onExpand={() => open('Factores de Riesgo', 'Evolución anual de todos los marcadores metabólicos', <div style={{ height: 420 }}><FactoresLine expanded /></div>)}
+                accentColor="#FF2D92"
+                onExpand={() =>
+                  open(
+                    "Factores de riesgo",
+                    "Evolución anual de todos los marcadores metabólicos",
+                    <div style={{ height: CHART_H }}>
+                      <FactoresLine expanded />
+                    </div>,
+                  )
+                }
               >
                 <FactoresLine />
               </WidgetCard>
             </div>
           </div>
 
+          <div className="grid-stack-item" {...gs(9, 6, 3, 3, { minH: 2 })}>
+            <div className="grid-stack-item-content">
+              <WidgetCard
+                title="Casos por año"
+                subtitle="Pacientes diagnosticados por año"
+                accentColor="#0A84FF"
+                onExpand={() =>
+                  open(
+                    "Casos por año",
+                    "Pacientes diagnosticados con síndrome metabólico por año",
+                    <div style={{ height: CHART_H }}>
+                      <CasosAnio expanded />
+                    </div>,
+                  )
+                }
+              >
+                <CasosAnio />
+              </WidgetCard>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* DRAWER */}
-      <Drawer
-        isOpen={!!drawer}
-        title={drawer?.title ?? ''}
-        subtitle={drawer?.subtitle}
-        onClose={() => setDrawer(null)}
+      <Modal
+        isOpen={!!modal}
+        title={modal?.title ?? ""}
+        subtitle={modal?.subtitle}
+        onClose={() => setModal(null)}
       >
-        {drawer?.content}
-      </Drawer>
+        {modal?.content}
+      </Modal>
     </motion.div>
   );
 }
