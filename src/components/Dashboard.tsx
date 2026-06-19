@@ -85,21 +85,16 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
     if (!containerRef.current || gridRef.current) return;
     const container = containerRef.current;
 
-    // ResizeObserver on items: catches GridStack height changes during
-    // drag-resize and responsive column switches.
-    const ro = new ResizeObserver(() =>
-      window.dispatchEvent(new Event("resize"))
-    );
-    container
-      .querySelectorAll(".grid-stack-item")
-      .forEach((el) => ro.observe(el));
-
+    // animate:false on init so GridStack sets final heights instantly (no
+    // 300ms CSS transition). Without this, any resize dispatch fired before
+    // the transition ends measures a partial height and ECharts renders blank.
+    // Animation is re-enabled one frame later so drag/resize still looks smooth.
     gridRef.current = GridStack.init(
       {
         column: 12,
         cellHeight: 82,
         margin: 8,
-        animate: true,
+        animate: false,
         draggable: { handle: ".widget_handle" },
         resizable: { handles: "se" },
         float: false,
@@ -114,13 +109,23 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
       container,
     );
 
-    // Belt-and-suspenders for the first paint: GridStack may only change
-    // item *position* (transform) on init, not size, so ResizeObserver
-    // might stay silent. A short timeout guarantees ECharts re-measures
-    // once heights are committed.
+    // Re-enable animation for subsequent drag/resize interactions.
+    requestAnimationFrame(() => {
+      gridRef.current?.setAnimation(true);
+    });
+
+    // ResizeObserver covers drag-resize and responsive column switches.
+    const ro = new ResizeObserver(() =>
+      window.dispatchEvent(new Event("resize"))
+    );
+    container
+      .querySelectorAll(".grid-stack-item")
+      .forEach((el) => ro.observe(el));
+
+    // Dispatch resize once heights are committed so ECharts measures correctly.
     const t = setTimeout(
       () => window.dispatchEvent(new Event("resize")),
-      120,
+      50,
     );
 
     return () => {
