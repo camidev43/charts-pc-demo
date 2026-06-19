@@ -83,6 +83,17 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
 
   useEffect(() => {
     if (!containerRef.current || gridRef.current) return;
+    const container = containerRef.current;
+
+    // ResizeObserver on items: catches GridStack height changes during
+    // drag-resize and responsive column switches.
+    const ro = new ResizeObserver(() =>
+      window.dispatchEvent(new Event("resize"))
+    );
+    container
+      .querySelectorAll(".grid-stack-item")
+      .forEach((el) => ro.observe(el));
+
     gridRef.current = GridStack.init(
       {
         column: 12,
@@ -100,19 +111,20 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
           ],
         },
       },
-      containerRef.current,
+      container,
     );
-    // ResizeObserver fires at end-of-frame after GridStack commits heights.
-    // ECharts measures the container at mount (gets 0) so it needs a nudge
-    // once the real dimensions land — this covers initial load and column changes.
-    const container = containerRef.current;
-    const ro = new ResizeObserver(() =>
-      window.dispatchEvent(new Event("resize"))
+
+    // Belt-and-suspenders for the first paint: GridStack may only change
+    // item *position* (transform) on init, not size, so ResizeObserver
+    // might stay silent. A short timeout guarantees ECharts re-measures
+    // once heights are committed.
+    const t = setTimeout(
+      () => window.dispatchEvent(new Event("resize")),
+      120,
     );
-    container
-      .querySelectorAll(".grid-stack-item")
-      .forEach((el) => ro.observe(el));
+
     return () => {
+      clearTimeout(t);
       ro.disconnect();
       gridRef.current?.destroy(false);
       gridRef.current = null;
