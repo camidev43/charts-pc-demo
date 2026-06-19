@@ -102,12 +102,18 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
       },
       containerRef.current,
     );
-    // GridStack settles cell heights asynchronously; ECharts reads container
-    // dimensions at mount and gets 0. Two rAFs let the layout commit first.
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => window.dispatchEvent(new Event("resize")))
+    // ResizeObserver fires at end-of-frame after GridStack commits heights.
+    // ECharts measures the container at mount (gets 0) so it needs a nudge
+    // once the real dimensions land — this covers initial load and column changes.
+    const container = containerRef.current;
+    const ro = new ResizeObserver(() =>
+      window.dispatchEvent(new Event("resize"))
     );
+    container
+      .querySelectorAll(".grid-stack-item")
+      .forEach((el) => ro.observe(el));
     return () => {
+      ro.disconnect();
       gridRef.current?.destroy(false);
       gridRef.current = null;
     };
