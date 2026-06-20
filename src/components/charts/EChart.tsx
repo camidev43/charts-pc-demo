@@ -1,24 +1,41 @@
+import { useEffect, useRef } from "react";
 import ReactECharts from "echarts-for-react";
 import type { EChartsReactProps } from "echarts-for-react";
 import type { ECharts } from "echarts";
 
-// Wrapper that polls until the container has real dimensions before calling
-// chart.resize(). echarts-for-react initializes the canvas with whatever
-// clientHeight the container has at mount time — in a GridStack layout that
-// is often 0, leaving a blank canvas. Polling with rAF is self-healing and
-// works regardless of CSS / GridStack animation timing.
+// A ResizeObserver on the chart's own wrapper. It fires once immediately with
+// the current size and again on every change, so it cannot miss the moment
+// GridStack gives the container a real height — which is why charts that used
+// to render blank until a manual window resize now paint on first load. No
+// timers, no global resize events, each chart heals itself.
 export default function EChart(props: EChartsReactProps) {
-  function handleReady(chart: ECharts) {
-    const poll = () => {
-      if (chart.getDom().clientHeight > 0) {
-        chart.resize();
-      } else {
-        requestAnimationFrame(poll);
-      }
-    };
-    requestAnimationFrame(poll);
-    props.onChartReady?.(chart);
-  }
+  const chartRef = useRef<ECharts | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
-  return <ReactECharts {...props} onChartReady={handleReady} />;
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      const chart = chartRef.current;
+      if (chart && !chart.isDisposed() && width > 0 && height > 0) {
+        chart.resize();
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={wrapRef} style={{ width: "100%", height: "100%" }}>
+      <ReactECharts
+        {...props}
+        style={{ height: "100%", width: "100%" }}
+        onChartReady={(chart) => {
+          chartRef.current = chart;
+          props.onChartReady?.(chart);
+        }}
+      />
+    </div>
+  );
 }

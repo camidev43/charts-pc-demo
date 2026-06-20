@@ -83,12 +83,8 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
 
   useEffect(() => {
     if (!containerRef.current || gridRef.current) return;
-    const container = containerRef.current;
-
-    // animate:false on init so GridStack sets final heights instantly (no
-    // 300ms CSS transition). Without this, any resize dispatch fired before
-    // the transition ends measures a partial height and ECharts renders blank.
-    // Animation is re-enabled one frame later so drag/resize still looks smooth.
+    // Each chart owns a ResizeObserver (see EChart.tsx) that resizes it once
+    // the container has a real height, so the grid just needs to lay out.
     gridRef.current = GridStack.init(
       {
         column: 12,
@@ -106,31 +102,9 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
           ],
         },
       },
-      container,
+      containerRef.current,
     );
-
-    // Re-enable animation for subsequent drag/resize interactions.
-    requestAnimationFrame(() => {
-      gridRef.current?.setAnimation(true);
-    });
-
-    // ResizeObserver covers drag-resize and responsive column switches.
-    const ro = new ResizeObserver(() =>
-      window.dispatchEvent(new Event("resize"))
-    );
-    container
-      .querySelectorAll(".grid-stack-item")
-      .forEach((el) => ro.observe(el));
-
-    // Dispatch resize once heights are committed so ECharts measures correctly.
-    const t = setTimeout(
-      () => window.dispatchEvent(new Event("resize")),
-      50,
-    );
-
     return () => {
-      clearTimeout(t);
-      ro.disconnect();
       gridRef.current?.destroy(false);
       gridRef.current = null;
     };
