@@ -1,17 +1,17 @@
 import EChart from './EChart';
 import * as echarts from 'echarts';
 import { regionalData } from '../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 
+/** Barras horizontales de pacientes y % de riesgo por región. */
 export default function DistribucionChart({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { cc, tooltip } = useChartTheme();
   const regions = [...regionalData].reverse();
 
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
       formatter: (params: { seriesName: string; value: number; color: string }[]) =>

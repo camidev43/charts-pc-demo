@@ -2,13 +2,13 @@ import { useState } from 'react';
 import EChart from './EChart';
 import * as echarts from 'echarts';
 import { evolucionSemana, evolucionMes, weekLabels } from '../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 import styles from '../../styles/EvolucionChart.module.css';
 
+/** Líneas de glucosa/triglicéridos/HDL con pestañas semana/mes. */
 export default function EvolucionChart({ expanded }: { expanded?: boolean }) {
   const [tab, setTab] = useState<'semana' | 'mes'>('semana');
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { theme, cc, tooltip } = useChartTheme();
 
   const isWeek = tab === 'semana';
   const labels  = isWeek ? weekLabels : evolucionMes.labels;
@@ -34,7 +34,7 @@ export default function EvolucionChart({ expanded }: { expanded?: boolean }) {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: 'axis',
       formatter: (params: { seriesName: string; value: number; color: string }[]) =>
         params.map(p =>

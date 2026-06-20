@@ -1,15 +1,16 @@
 import EChart from "./EChart";
 import { diagnostics } from "../../data/mockData";
-import { useTheme, TOOLTIP_GLASS } from "../../context/ThemeContext";
+import { useChartTheme } from "../../context/ThemeContext";
 
+/** Treemap de diagnósticos por patología, proporcional al nº de pacientes. */
 export default function DiagnosticosTree({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
+  const { theme, tooltip } = useChartTheme();
   const total = diagnostics.reduce((s, d) => s + d.value, 0);
 
   const option = {
     backgroundColor: "transparent",
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: "item",
       formatter: (p: { name: string; value: number; color: string }) =>
         `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${p.color};margin-right:5px;"></span>` +

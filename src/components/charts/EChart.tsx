@@ -4,30 +4,31 @@ import type { ECharts } from "echarts";
 
 interface Props {
   /**
-   * ECharts option object. Typed loosely (not `EChartsOption`) because the
-   * chart components build plain literals that don't satisfy ECharts' strict
-   * discriminated unions — the same looseness `echarts-for-react` allows.
+   * Objeto `option` de ECharts. Tipado laxo (no `EChartsOption`) porque los
+   * charts construyen literales planos que no satisfacen las uniones estrictas
+   * de ECharts — la misma laxitud que permite `echarts-for-react`.
    */
   option: Record<string, unknown>;
-  /** Extra styles merged onto the chart container (defaults to filling its parent). */
+  /** Estilos extra para el contenedor del chart (por defecto llena a su padre). */
   style?: CSSProperties;
-  /** Rendering backend. Canvas is the default and best for these dashboards. */
+  /** Motor de render. Canvas es el default y el mejor para estos dashboards. */
   renderer?: "canvas" | "svg";
 }
 
 /**
- * Thin wrapper around `echarts-for-react` that guarantees charts paint on first
- * layout inside a GridStack cell.
+ * Envoltorio fino sobre `echarts-for-react` que garantiza que los charts pinten
+ * en el primer layout dentro de una celda de GridStack.
  *
- * The widgets mount with a height of `100%`, but GridStack only assigns the
- * cell its real pixel height a frame later. ECharts measures its container at
- * init time and would otherwise lock in a 0×0 canvas — staying blank until a
- * manual window resize. The fix is the `ResizeObserver` below: on every size
- * change it calls `chart.resize({ width, height })` with the observer's
- * **explicit** dimensions, so ECharts never has to re-measure a racing DOM.
+ * Los widgets montan con alto `100%`, pero GridStack le asigna a la celda su
+ * alto real en píxeles un frame después. ECharts mide su contenedor al
+ * inicializar y, si no, se quedaría con un canvas de 0×0 — en blanco hasta un
+ * resize manual de la ventana. La solución es el `ResizeObserver` de abajo: en
+ * cada cambio de tamaño llama `chart.resize({ width, height })` con las
+ * dimensiones **explícitas** del observer, así ECharts nunca re-mide un DOM
+ * que está en carrera.
  *
- * Centralising this here means the 11 chart components stay declarative — they
- * only build an `option` and render `<EChart option={...} />`.
+ * Centralizar esto aquí mantiene a los 11 charts declarativos — solo construyen
+ * un `option` y renderizan `<EChart option={...} />`.
  */
 export default function EChart({ option, style, renderer = "canvas" }: Props) {
   const chartRef = useRef<ECharts | null>(null);

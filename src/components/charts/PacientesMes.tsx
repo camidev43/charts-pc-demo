@@ -1,11 +1,11 @@
 import EChart from './EChart';
 import { patientStats } from '../../data/mockData';
-import { useTheme, chartColors } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 import styles from '../../styles/PacientesMes.module.css';
 
+/** Gauge del total de pacientes + chips de nuevos del mes e IMC promedio. */
 export default function PacientesMes() {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { cc } = useChartTheme();
 
   const gaugeOption = {
     backgroundColor: 'transparent',

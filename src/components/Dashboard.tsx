@@ -9,6 +9,7 @@ import WidgetCard from "./WidgetCard";
 import GridItem from "./GridItem";
 import ThemeToggle from "./ThemeToggle";
 import Modal from "./Modal";
+import { BackIcon } from "./icons";
 import DistribucionChart from "./charts/DistribucionChart";
 import IMCBarChart from "./charts/IMCBarChart";
 import RadarChart from "./charts/RadarChart";
@@ -32,14 +33,14 @@ interface Props {
   onToggleTheme: () => void;
 }
 
-/** Height (px) of the chart shown inside the expanded modal. */
+/** Alto (px) del chart mostrado dentro del modal expandido. */
 const MODAL_CHART_H = 400;
 
 /**
- * The dashboard view: a draggable, resizable GridStack of widget cards, each
- * holding a chart. Clicking a card's expand button opens that chart larger in a
- * modal. The grid is initialised once on mount; the charts size themselves via
- * their own ResizeObserver (see EChart.tsx).
+ * Vista del dashboard: una grilla GridStack de tarjetas-widget arrastrables y
+ * redimensionables, cada una con un chart. El botón de expandir de una tarjeta
+ * abre ese chart en grande en un modal. La grilla se inicializa una vez al
+ * montar; los charts se dimensionan solos vía su ResizeObserver (ver EChart.tsx).
  */
 export default function Dashboard({ onBack, onToggleTheme }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,8 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
         column: 12,
         cellHeight: 82,
         margin: 8,
-        // Animate so neighbouring widgets glide into freed space on drag/resize.
+        // Con animate los widgets vecinos se deslizan al hueco liberado al
+        // arrastrar o redimensionar (en vez de saltar de golpe).
         animate: true,
         draggable: { handle: ".widget_handle" },
         resizable: { handles: "se" },
@@ -74,7 +76,7 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
     };
   }, []);
 
-  /** Opens the modal with the given chart blown up to {@link MODAL_CHART_H}. */
+  /** Abre el modal con el chart dado ampliado a {@link MODAL_CHART_H}. */
   const open = (title: string, subtitle: string, chart: ReactNode, height = MODAL_CHART_H) =>
     setModal({ title, subtitle, content: <div style={{ height }}>{chart}</div> });
 
@@ -89,17 +91,7 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
       <header className={styles.top_bar}>
         <div className={styles.float_left}>
           <button className={styles.glass_btn} onClick={onBack}>
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
+            <BackIcon />
             Volver
           </button>
         </div>

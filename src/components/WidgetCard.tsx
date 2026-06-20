@@ -1,21 +1,22 @@
 import { ReactNode, useState } from "react";
 import styles from "../styles/WidgetCard.module.css";
+import { ExpandIcon } from "./icons";
 
 interface Props {
-  /** Heading shown in the card header. */
+  /** Título mostrado en la cabecera de la tarjeta. */
   title: string;
-  /** Optional second line under the title. */
+  /** Segunda línea opcional bajo el título. */
   subtitle?: string;
   children: ReactNode;
-  /** When provided, renders an expand button that opens the chart in a modal. */
+  /** Si se pasa, renderiza un botón de expandir que abre el chart en un modal. */
   onExpand?: () => void;
-  /** Colour of the dot next to the title. */
+  /** Color del punto junto al título. */
   accentColor?: string;
-  /** Drop the default body padding (e.g. for cards that pad their own content). */
+  /** Quita el padding por defecto del cuerpo (para tarjetas que pad su contenido). */
   noPadding?: boolean;
 }
 
-/** The 2×2 dot grip that marks the draggable area of the card header. */
+/** Los 2×2 puntos que marcan la zona arrastrable de la cabecera. */
 const GripDots = () => (
   <div className={styles.grip}>
     {[0, 1].map((r) => (
@@ -29,9 +30,9 @@ const GripDots = () => (
 );
 
 /**
- * Glass card that frames a chart inside the grid. Its header doubles as the
- * GridStack drag handle (`.widget_handle`) and optionally shows an expand
- * button. Rendered as an `<article>` since each widget is self-contained.
+ * Tarjeta "glass" que enmarca un chart dentro de la grilla. Su cabecera hace de
+ * handle de arrastre de GridStack (`.widget_handle`) y opcionalmente muestra un
+ * botón de expandir. Se renderiza como `<article>` por ser autocontenida.
  */
 export default function WidgetCard({
   title,
@@ -68,18 +69,9 @@ export default function WidgetCard({
             className={styles.expand_btn}
             onClick={onExpand}
             title="Expandir"
+            aria-label="Expandir"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-            </svg>
+            <ExpandIcon />
           </button>
         )}
       </header>

@@ -1,10 +1,10 @@
 import EChart from './EChart';
 import { patientStats } from '../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 
+/** Donut de distribución de pacientes por nivel de riesgo cardiovascular. */
 export default function RiesgoDonut({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { theme, cc, tooltip } = useChartTheme();
 
   const data = [
     { value: patientStats.riskHigh,   name: 'Alto',  itemStyle: { color: '#FF3B30' } },
@@ -15,7 +15,7 @@ export default function RiesgoDonut({ expanded }: { expanded?: boolean }) {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: 'item',
       formatter: (p: { name: string; value: number; color: string }) =>
         `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${p.color};margin-right:5px;"></span>`

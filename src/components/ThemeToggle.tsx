@@ -1,45 +1,17 @@
 import { useTheme } from "../context/ThemeContext";
-
-const SunIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <circle cx="12" cy="12" r="5" />
-    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-  </svg>
-);
+import { SunIcon, MoonIcon } from "./icons";
 
 interface Props {
-  /** Called when the user clicks the toggle. */
+  /** Se llama al hacer clic en el botón. */
   onToggle: () => void;
-  /** Visual styling — differs between the landing and the dashboard top bar. */
+  /** Estilos — difieren entre la landing y la barra superior del dashboard. */
   className?: string;
 }
 
 /**
- * Shared light/dark theme switch. Shows a sun while in dark mode (click to go
- * light) and a moon while in light mode. Used by both the landing and the
- * dashboard, which is why the markup lives here instead of being duplicated.
+ * Botón compartido de cambio de tema. Muestra un sol en modo oscuro (clic para
+ * pasar a claro) y una luna en modo claro. Lo usan tanto la landing como el
+ * dashboard, por eso el markup vive aquí en vez de estar duplicado.
  */
 export default function ThemeToggle({ onToggle, className }: Props) {
   const theme = useTheme();

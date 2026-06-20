@@ -75,6 +75,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  /* space-between reparte las barras en el alto disponible, así al
+     redimensionar la tarjeta más alta no queda espacio vacío abajo. */
+  justify-content: space-between;
   gap: 0.1875rem;
   overflow: hidden;
 }

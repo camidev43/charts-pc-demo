@@ -1,20 +1,21 @@
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/Modal.module.css';
+import { CloseIcon } from './icons';
 
 interface Props {
   isOpen: boolean;
   title: string;
   subtitle?: string;
-  /** Called on backdrop click or the close button. */
+  /** Se llama al hacer clic en el fondo o en el botón de cerrar. */
   onClose: () => void;
   children: ReactNode;
 }
 
 /**
- * Centered modal with a fading backdrop and a spring-scaled panel. Mounts and
- * unmounts through `AnimatePresence` so the exit animation can play. Used by the
- * dashboard to show an expanded chart.
+ * Modal centrado con fondo que se desvanece y un panel con entrada tipo resorte.
+ * Se monta y desmonta vía `AnimatePresence` para que la animación de salida se
+ * reproduzca. Lo usa el dashboard para mostrar un chart ampliado.
  */
 export default function Modal({ isOpen, title, subtitle, onClose, children }: Props) {
   return (
@@ -55,9 +56,7 @@ export default function Modal({ isOpen, title, subtitle, onClose, children }: Pr
                   {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
                 </div>
                 <button className={styles.close_btn} onClick={onClose} aria-label="Cerrar">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M1 1l12 12M13 1L1 13"/>
-                  </svg>
+                  <CloseIcon />
                 </button>
               </header>
 

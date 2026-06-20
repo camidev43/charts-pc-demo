@@ -1,20 +1,16 @@
 import EChart from "./EChart";
 import * as echarts from "echarts";
 import { monthlyBMI } from "../../data/mockData";
-import {
-  useTheme,
-  chartColors,
-  TOOLTIP_GLASS,
-} from "../../context/ThemeContext";
+import { useChartTheme } from "../../context/ThemeContext";
 
+/** Barras del IMC promedio mensual con línea de tendencia. */
 export default function IMCBarChart({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { cc, tooltip } = useChartTheme();
 
   const option = {
     backgroundColor: "transparent",
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: "axis",
       formatter: (params: { value: number }[]) =>
         `<span style="color:#8B93A8">IMC</span>&ensp;<b style="color:#18151F">${params[0].value}</b>`,

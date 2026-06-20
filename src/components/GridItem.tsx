@@ -1,29 +1,29 @@
 import { ReactNode } from "react";
 
 interface Props {
-  /** Column (0-11) where the widget starts. */
+  /** Columna (0-11) donde empieza el widget. */
   x: number;
-  /** Row where the widget starts. */
+  /** Fila donde empieza el widget. */
   y: number;
-  /** Width in columns. */
+  /** Ancho en columnas. */
   w: number;
-  /** Height in grid cells. */
+  /** Alto en celdas de la grilla. */
   h: number;
-  /** Optional max width in columns. */
+  /** Ancho máximo opcional en columnas. */
   maxW?: number;
-  /** Optional min width in columns. */
+  /** Ancho mínimo opcional en columnas. */
   minW?: number;
-  /** Optional min height in cells. */
+  /** Alto mínimo opcional en celdas. */
   minH?: number;
   children: ReactNode;
 }
 
 /**
- * One cell in the GridStack layout. GridStack reads the `gs-*` attributes to
- * place and size the widget, and requires the exact `.grid-stack-item >
- * .grid-stack-item-content` structure, so those class names are part of its
- * contract and must stay as `div`s. This component just removes the repetitive
- * double-wrapper boilerplate from the dashboard.
+ * Una celda del layout de GridStack. GridStack lee los atributos `gs-*` para
+ * ubicar y dimensionar el widget, y exige la estructura exacta `.grid-stack-item
+ * > .grid-stack-item-content`, por eso esas clases son parte de su contrato y
+ * deben seguir siendo `div`s. Este componente solo elimina el doble-envoltorio
+ * repetitivo del dashboard.
  */
 export default function GridItem({ x, y, w, h, maxW, minW, minH, children }: Props) {
   return (

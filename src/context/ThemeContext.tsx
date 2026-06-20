@@ -1,9 +1,17 @@
 import { createContext, useContext } from "react";
 
 export type Theme = "light" | "dark";
+
+/** Contexto global del tema. Lo provee `App` y lo refleja en `<html data-theme>`. */
 export const ThemeContext = createContext<Theme>("light");
+
+/** Devuelve el tema actual ("light" | "dark"). */
 export const useTheme = () => useContext(ThemeContext);
 
+/**
+ * Paleta derivada del tema para los charts (color de ejes, grillas, etc.).
+ * Se usa a través de {@link useChartTheme} para no repetir el cálculo.
+ */
 export function chartColors(theme: Theme) {
   const d = theme === "dark";
   return {
@@ -17,6 +25,10 @@ export function chartColors(theme: Theme) {
   };
 }
 
+/**
+ * Estilo "glass" compartido para los tooltips de ECharts. Se expone vía
+ * {@link useChartTheme} como `tooltip` para no importarlo en cada chart.
+ */
 export const TOOLTIP_GLASS = {
   appendToBody: true,
   confine: false,
@@ -34,3 +46,18 @@ export const TOOLTIP_GLASS = {
   extraCssText:
     "box-shadow:0 8px 32px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.06);",
 };
+
+/**
+ * Acceso centralizado al tema para los charts. En vez de repetir en cada uno
+ * `const theme = useTheme(); const cc = chartColors(theme);`, basta:
+ *
+ * ```tsx
+ * const { cc, tooltip } = useChartTheme();
+ * ```
+ *
+ * @returns `theme` (claro/oscuro), `cc` (colores derivados) y `tooltip` (estilo glass).
+ */
+export function useChartTheme() {
+  const theme = useTheme();
+  return { theme, cc: chartColors(theme), tooltip: TOOLTIP_GLASS };
+}

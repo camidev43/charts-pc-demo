@@ -1,10 +1,10 @@
 import EChart from './EChart';
 import { factoresLine } from '../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 
+/** Líneas de evolución anual de los marcadores metabólicos. */
 export default function FactoresLine({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { cc, tooltip } = useChartTheme();
 
   const series = factoresLine.series.map(s => ({
     name: s.name,
@@ -40,7 +40,7 @@ export default function FactoresLine({ expanded }: { expanded?: boolean }) {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: 'axis',
       axisPointer: { lineStyle: { color: cc.grid, width: 1 } },
       formatter: (params: { seriesName: string; value: number; color: string }[]) =>

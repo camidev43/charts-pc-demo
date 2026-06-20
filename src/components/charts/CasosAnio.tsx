@@ -1,17 +1,17 @@
 import EChart from './EChart';
 import * as echarts from 'echarts';
 import { casosAnuales } from '../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 
+/** Barras de casos diagnosticados por año, con la última barra resaltada. */
 export default function CasosAnio({ expanded }: { expanded?: boolean }) {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { cc, tooltip } = useChartTheme();
   const last = casosAnuales.casos.length - 1;
 
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      ...TOOLTIP_GLASS,
+      ...tooltip,
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
       formatter: (params: { name: string; value: number }[]) =>

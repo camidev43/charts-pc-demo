@@ -1,50 +1,28 @@
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import ThemeToggle from './ThemeToggle';
+import { HeartPulseIcon, GaugeIcon, DropletIcon, ArrowRightIcon } from './icons';
 import styles from '../styles/LandingCard.module.css';
 
 interface Props {
-  /** Enter the dashboard. */
+  /** Entrar al dashboard. */
   onExplore: () => void;
-  /** Toggle between light and dark theme. */
+  /** Alternar entre tema claro y oscuro. */
   onToggleTheme: () => void;
 }
 
-const HeartPulseIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.4 4.6a5.5 5.5 0 0 0-7.8 0L12 5.2l-.6-.6a5.5 5.5 0 0 0-7.8 7.8l.6.6L12 21l7.8-8 .6-.6a5.5 5.5 0 0 0 0-7.8z"/>
-    <path d="M3.5 12.5h4l1.5-3 2.5 6 1.8-4 1.2 2h4.5"/>
-  </svg>
-);
-
-const GaugeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 17a9 9 0 1 1 18 0"/>
-    <path d="M12 17l4.2-4.2"/>
-    <circle cx="12" cy="17" r="1.6" fill="currentColor" stroke="none"/>
-    <path d="M5.5 13.5l1.4.6M18.5 13.5l-1.4.6M12 6.5V8"/>
-  </svg>
-);
-
-const DropletIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 3.2c3.2 3.6 6.5 7.2 6.5 11.1A6.5 6.5 0 0 1 5.5 14.3C5.5 10.4 8.8 6.8 12 3.2z"/>
-    <path d="M9 14.5a3 3 0 0 0 3 3"/>
-  </svg>
-);
-
 interface ModuleCardProps {
-  /** CSS-module class that themes the card (colours, glow). */
+  /** Clase del CSS-module que da color/glow a la tarjeta. */
   variant: string;
   title: string;
   description: string;
   icon: React.ReactNode;
-  /** Entrance animation delay so the cards stagger in. */
+  /** Retraso de la animación de entrada para que las tarjetas aparezcan escalonadas. */
   delay: number;
   onExplore: () => void;
 }
 
-/** A single clickable module card on the landing screen. */
+/** Una tarjeta de módulo clicable de la pantalla de inicio. */
 function ModuleCard({ variant, title, description, icon, delay, onExplore }: ModuleCardProps) {
   const theme = useTheme();
   const dark = theme === 'dark';
@@ -79,16 +57,14 @@ function ModuleCard({ variant, title, description, icon, delay, onExplore }: Mod
         <p className={styles.card_desc}>{description}</p>
         <span className={styles.cta}>
           Explorar
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+          <ArrowRightIcon />
         </span>
       </div>
     </motion.button>
   );
 }
 
-/** Landing screen: a title and three module cards that lead into the dashboard. */
+/** Pantalla de inicio: un título y tres tarjetas de módulo que llevan al dashboard. */
 export default function LandingCard({ onExplore, onToggleTheme }: Props) {
   return (
     <motion.main

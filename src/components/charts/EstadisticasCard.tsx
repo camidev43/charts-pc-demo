@@ -1,10 +1,10 @@
 import { estadisticas, patientStats } from '../../data/mockData';
-import { useTheme, chartColors } from '../../context/ThemeContext';
+import { useChartTheme } from '../../context/ThemeContext';
 import styles from '../../styles/EstadisticasCard.module.css';
 
+/** Tarjeta resumen: total de pacientes, chips de riesgo y barras de métricas clínicas. */
 export default function EstadisticasCard() {
-  const theme = useTheme();
-  const cc = chartColors(theme);
+  const { theme, cc } = useChartTheme();
   const dark = theme === 'dark';
 
   const riskChips = [
