@@ -83,9 +83,9 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
 
   useEffect(() => {
     if (!containerRef.current || gridRef.current) return;
-    // Each chart owns a ResizeObserver (see EChart.tsx) that resizes it once
-    // the container has a real height, so the grid just needs to lay out.
-    gridRef.current = GridStack.init(
+    const container = containerRef.current;
+
+    const grid = GridStack.init(
       {
         column: 12,
         cellHeight: 82,
@@ -102,10 +102,36 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
           ],
         },
       },
-      containerRef.current,
+      container,
     );
+    gridRef.current = grid;
+
+    const logHeights = (tag: string) => {
+      const items = container.querySelectorAll<HTMLElement>(".grid-stack-item");
+      // eslint-disable-next-line no-console
+      console.log(
+        `[Grid] ${tag} — containerW:${container.clientWidth} | items:${items.length} | firstItemH:${items[0]?.offsetHeight} | gridH:${container.offsetHeight}`,
+      );
+    };
+    logHeights("after init");
+
+    // In production the JS runs before the browser's first layout, so the grid
+    // container can be 0-width at init() and GridStack assigns every item a
+    // height of 0 — the charts collapse and stay blank until a manual resize.
+    // Observing the container re-runs GridStack's layout (via its own window
+    // resize handler) the instant the container gets a real width. This is the
+    // automatic equivalent of the user dragging a card to force a relayout.
+    const ro = new ResizeObserver(() => {
+      // eslint-disable-next-line no-console
+      console.log(`[Grid] container RO fired — width:${container.clientWidth}`);
+      window.dispatchEvent(new Event("resize"));
+      logHeights("after RO resize");
+    });
+    ro.observe(container);
+
     return () => {
-      gridRef.current?.destroy(false);
+      ro.disconnect();
+      grid.destroy(false);
       gridRef.current = null;
     };
   }, []);
