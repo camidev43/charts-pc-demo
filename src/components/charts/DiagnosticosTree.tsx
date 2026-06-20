@@ -1,6 +1,6 @@
-import EChart from "../EChart";
-import { diagnostics } from "../../../data/mockData";
-import { useTheme, TOOLTIP_GLASS } from "../../../context/ThemeContext";
+import EChart from "./EChart";
+import { diagnostics } from "../../data/mockData";
+import { useTheme, TOOLTIP_GLASS } from "../../context/ThemeContext";
 
 export default function DiagnosticosTree({ expanded }: { expanded?: boolean }) {
   const theme = useTheme();
@@ -66,10 +66,6 @@ export default function DiagnosticosTree({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <EChart
-      option={option}
-      style={{ height: "100%", width: "100%" }}
-      opts={{ renderer: "canvas" }}
-    />
+    <EChart option={option} />
   );
 }

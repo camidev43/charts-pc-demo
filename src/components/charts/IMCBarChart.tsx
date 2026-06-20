@@ -1,11 +1,11 @@
-import EChart from "../EChart";
+import EChart from "./EChart";
 import * as echarts from "echarts";
-import { monthlyBMI } from "../../../data/mockData";
+import { monthlyBMI } from "../../data/mockData";
 import {
   useTheme,
   chartColors,
   TOOLTIP_GLASS,
-} from "../../../context/ThemeContext";
+} from "../../context/ThemeContext";
 
 export default function IMCBarChart({ expanded }: { expanded?: boolean }) {
   const theme = useTheme();
@@ -84,10 +84,6 @@ export default function IMCBarChart({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <EChart
-      option={option}
-      style={{ height: "100%", width: "100%" }}
-      opts={{ renderer: "canvas" }}
-    />
+    <EChart option={option} />
   );
 }

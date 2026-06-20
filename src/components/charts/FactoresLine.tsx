@@ -1,6 +1,6 @@
-import EChart from '../EChart';
-import { factoresLine } from '../../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
+import EChart from './EChart';
+import { factoresLine } from '../../data/mockData';
+import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
 
 export default function FactoresLine({ expanded }: { expanded?: boolean }) {
   const theme = useTheme();
@@ -84,6 +84,6 @@ export default function FactoresLine({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <EChart option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }} />
+    <EChart option={option} />
   );
 }

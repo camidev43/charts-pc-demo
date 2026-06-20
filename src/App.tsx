@@ -4,6 +4,12 @@ import { ThemeContext, Theme } from "./context/ThemeContext";
 import LandingCard from "./components/LandingCard";
 import Dashboard from "./components/Dashboard";
 
+/**
+ * Root component. Holds the two top-level concerns: which view is showing
+ * (landing vs. dashboard) and the current theme, which it exposes through
+ * `ThemeContext` and mirrors onto `<html data-theme>` for the CSS variables.
+ * `AnimatePresence` cross-fades between the two views.
+ */
 export default function App() {
   const [view, setView] = useState<"card" | "dashboard">("card");
   const [theme, setTheme] = useState<Theme>("light");

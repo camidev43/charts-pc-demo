@@ -1,11 +1,11 @@
-import EChart from "../EChart";
+import EChart from "./EChart";
 import * as echarts from "echarts";
-import { actividadData } from "../../../data/mockData";
+import { actividadData } from "../../data/mockData";
 import {
   useTheme,
   chartColors,
   TOOLTIP_GLASS,
-} from "../../../context/ThemeContext";
+} from "../../context/ThemeContext";
 
 export default function ActividadChart({ expanded }: { expanded?: boolean }) {
   const theme = useTheme();
@@ -19,30 +19,11 @@ export default function ActividadChart({ expanded }: { expanded?: boolean }) {
       formatter: (params: { value: number }[]) =>
         `<span style="color:#8B93A8">Calorías</span>&ensp;<b style="color:#18151F">${params[0].value} kcal</b>`,
     },
-    dataZoom: [
-      {
-        type: "slider",
-        show: true,
-        xAxisIndex: [0],
-        start: 0,
-        end: 100,
-        bottom: expanded ? 4 : 2,
-        handleSize: "100%",
-        handleStyle: {
-          color: cc.text,
-          borderColor: cc.text,
-        },
-        textStyle: {
-          color: cc.text,
-        },
-      },
-    ],
-
     grid: {
       left: expanded ? 44 : 32,
       right: expanded ? 16 : 8,
       top: expanded ? 20 : 12,
-      bottom: expanded ? 32 : 22,
+      bottom: expanded ? 24 : 18,
     },
     xAxis: {
       type: "category",
@@ -85,10 +66,6 @@ export default function ActividadChart({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <EChart
-      option={option}
-      style={{ height: "100%", width: "100%" }}
-      opts={{ renderer: "canvas" }}
-    />
+    <EChart option={option} />
   );
 }

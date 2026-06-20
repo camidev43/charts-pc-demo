@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import EChart from '../EChart';
+import EChart from './EChart';
 import * as echarts from 'echarts';
-import { evolucionSemana, evolucionMes, weekLabels } from '../../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
-import styles from './EvolucionChart.module.css';
+import { evolucionSemana, evolucionMes, weekLabels } from '../../data/mockData';
+import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
+import styles from '../../styles/EvolucionChart.module.css';
 
 export default function EvolucionChart({ expanded }: { expanded?: boolean }) {
   const [tab, setTab] = useState<'semana' | 'mes'>('semana');
@@ -81,12 +81,7 @@ export default function EvolucionChart({ expanded }: { expanded?: boolean }) {
         ))}
       </div>
       <div className={styles.chart_area}>
-        <EChart
-          key={tab}
-          option={option}
-          style={{ height: '100%', width: '100%' }}
-          opts={{ renderer: 'canvas' }}
-        />
+        <EChart key={tab} option={option} />
       </div>
     </div>
   );

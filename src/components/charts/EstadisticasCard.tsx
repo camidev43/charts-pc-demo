@@ -1,6 +1,6 @@
-import { estadisticas, patientStats } from '../../../data/mockData';
-import { useTheme, chartColors } from '../../../context/ThemeContext';
-import styles from './EstadisticasCard.module.css';
+import { estadisticas, patientStats } from '../../data/mockData';
+import { useTheme, chartColors } from '../../context/ThemeContext';
+import styles from '../../styles/EstadisticasCard.module.css';
 
 export default function EstadisticasCard() {
   const theme = useTheme();

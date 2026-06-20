@@ -1,6 +1,6 @@
-import EChart from '../EChart';
-import { patientStats } from '../../../data/mockData';
-import { useTheme, chartColors, TOOLTIP_GLASS } from '../../../context/ThemeContext';
+import EChart from './EChart';
+import { patientStats } from '../../data/mockData';
+import { useTheme, chartColors, TOOLTIP_GLASS } from '../../context/ThemeContext';
 
 export default function RiesgoDonut({ expanded }: { expanded?: boolean }) {
   const theme = useTheme();
@@ -55,6 +55,6 @@ export default function RiesgoDonut({ expanded }: { expanded?: boolean }) {
   };
 
   return (
-    <EChart option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
+    <EChart option={option} />
   );
 }

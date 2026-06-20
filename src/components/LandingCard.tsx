@@ -1,24 +1,14 @@
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import styles from './LandingCard.module.css';
+import ThemeToggle from './ThemeToggle';
+import styles from '../styles/LandingCard.module.css';
 
 interface Props {
+  /** Enter the dashboard. */
   onExplore: () => void;
+  /** Toggle between light and dark theme. */
   onToggleTheme: () => void;
 }
-
-const SunIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="12" cy="12" r="5"/>
-    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-  </svg>
-);
 
 const HeartPulseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -44,14 +34,17 @@ const DropletIcon = () => (
 );
 
 interface ModuleCardProps {
+  /** CSS-module class that themes the card (colours, glow). */
   variant: string;
   title: string;
   description: string;
   icon: React.ReactNode;
+  /** Entrance animation delay so the cards stagger in. */
   delay: number;
   onExplore: () => void;
 }
 
+/** A single clickable module card on the landing screen. */
 function ModuleCard({ variant, title, description, icon, delay, onExplore }: ModuleCardProps) {
   const theme = useTheme();
   const dark = theme === 'dark';
@@ -95,11 +88,10 @@ function ModuleCard({ variant, title, description, icon, delay, onExplore }: Mod
   );
 }
 
+/** Landing screen: a title and three module cards that lead into the dashboard. */
 export default function LandingCard({ onExplore, onToggleTheme }: Props) {
-  const theme = useTheme();
-
   return (
-    <motion.div
+    <motion.main
       className={styles.page}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -109,9 +101,7 @@ export default function LandingCard({ onExplore, onToggleTheme }: Props) {
       <div className={`${styles.orb} ${styles.orb1}`} />
       <div className={`${styles.orb} ${styles.orb2}`} />
 
-      <button className={styles.theme_btn} onClick={onToggleTheme} title="Cambiar tema">
-        {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-      </button>
+      <ThemeToggle onToggle={onToggleTheme} className={styles.theme_btn} />
 
       <motion.header
         className={styles.intro}
@@ -124,7 +114,7 @@ export default function LandingCard({ onExplore, onToggleTheme }: Props) {
         <p className={styles.lede}>Selecciona un módulo para explorar los indicadores</p>
       </motion.header>
 
-      <div className={styles.cards_wrapper}>
+      <section className={styles.cards_wrapper} aria-label="Módulos disponibles">
         <ModuleCard
           variant="mod_metabolico"
           title="Síndrome metabólico"
@@ -149,7 +139,7 @@ export default function LandingCard({ onExplore, onToggleTheme }: Props) {
           delay={0.32}
           onExplore={onExplore}
         />
-      </div>
-    </motion.div>
+      </section>
+    </motion.main>
   );
 }

@@ -3,41 +3,57 @@ import ReactECharts from "echarts-for-react";
 import type { ECharts } from "echarts";
 
 interface Props {
-  // Loose like echarts-for-react accepted — the chart files build plain option
-  // objects that don't satisfy ECharts' strict EChartsOption type.
+  /**
+   * ECharts option object. Typed loosely (not `EChartsOption`) because the
+   * chart components build plain literals that don't satisfy ECharts' strict
+   * discriminated unions — the same looseness `echarts-for-react` allows.
+   */
   option: Record<string, unknown>;
+  /** Extra styles merged onto the chart container (defaults to filling its parent). */
   style?: CSSProperties;
-  opts?: { renderer?: "canvas" | "svg" };
+  /** Rendering backend. Canvas is the default and best for these dashboards. */
+  renderer?: "canvas" | "svg";
 }
 
-// echarts-for-react variant. The blank-on-load bug was NOT echarts-for-react's
-// fault per se — it was calling chart.resize() with no arguments, which makes
-// ECharts re-measure the DOM (which raced to 0). Here we grab the instance via
-// onChartReady and, on every ResizeObserver tick, call resize() with the
-// EXPLICIT width/height from the observer, so ECharts never has to measure.
-export default function EChart({ option, style, opts }: Props) {
+/**
+ * Thin wrapper around `echarts-for-react` that guarantees charts paint on first
+ * layout inside a GridStack cell.
+ *
+ * The widgets mount with a height of `100%`, but GridStack only assigns the
+ * cell its real pixel height a frame later. ECharts measures its container at
+ * init time and would otherwise lock in a 0×0 canvas — staying blank until a
+ * manual window resize. The fix is the `ResizeObserver` below: on every size
+ * change it calls `chart.resize({ width, height })` with the observer's
+ * **explicit** dimensions, so ECharts never has to re-measure a racing DOM.
+ *
+ * Centralising this here means the 11 chart components stay declarative — they
+ * only build an `option` and render `<EChart option={...} />`.
+ */
+export default function EChart({ option, style, renderer = "canvas" }: Props) {
   const chartRef = useRef<ECharts | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
+
+    const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
       const chart = chartRef.current;
       if (chart && !chart.isDisposed() && width > 0 && height > 0) {
         chart.resize({ width, height });
       }
     });
-    ro.observe(el);
-    return () => ro.disconnect();
+    observer.observe(el);
+
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div ref={wrapRef} style={{ width: "100%", height: "100%", ...style }}>
       <ReactECharts
         option={option}
-        opts={opts}
+        opts={{ renderer }}
         style={{ width: "100%", height: "100%" }}
         onChartReady={(chart) => {
           chartRef.current = chart;

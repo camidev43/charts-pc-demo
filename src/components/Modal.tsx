@@ -1,15 +1,21 @@
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import styles from './Modal.module.css';
+import styles from '../styles/Modal.module.css';
 
 interface Props {
   isOpen: boolean;
   title: string;
   subtitle?: string;
+  /** Called on backdrop click or the close button. */
   onClose: () => void;
   children: ReactNode;
 }
 
+/**
+ * Centered modal with a fading backdrop and a spring-scaled panel. Mounts and
+ * unmounts through `AnimatePresence` so the exit animation can play. Used by the
+ * dashboard to show an expanded chart.
+ */
 export default function Modal({ isOpen, title, subtitle, onClose, children }: Props) {
   return (
     <AnimatePresence>
@@ -35,12 +41,15 @@ export default function Modal({ isOpen, title, subtitle, onClose, children }: Pr
           >
             <motion.div
               className={styles.panel}
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
               initial={{ scale: 0.92, y: 16 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.94, y: 8 }}
               transition={{ type: 'spring', stiffness: 340, damping: 30 }}
             >
-              <div className={styles.header}>
+              <header className={styles.header}>
                 <div className={styles.header_left}>
                   <h2 className={styles.title}>{title}</h2>
                   {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
@@ -50,7 +59,7 @@ export default function Modal({ isOpen, title, subtitle, onClose, children }: Pr
                     <path d="M1 1l12 12M13 1L1 13"/>
                   </svg>
                 </button>
-              </div>
+              </header>
 
               <div className={styles.body}>{children}</div>
             </motion.div>

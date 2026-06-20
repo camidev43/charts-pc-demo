@@ -1,15 +1,21 @@
 import { ReactNode, useState } from "react";
-import styles from "./WidgetCard.module.css";
+import styles from "../styles/WidgetCard.module.css";
 
 interface Props {
+  /** Heading shown in the card header. */
   title: string;
+  /** Optional second line under the title. */
   subtitle?: string;
   children: ReactNode;
+  /** When provided, renders an expand button that opens the chart in a modal. */
   onExpand?: () => void;
+  /** Colour of the dot next to the title. */
   accentColor?: string;
+  /** Drop the default body padding (e.g. for cards that pad their own content). */
   noPadding?: boolean;
 }
 
+/** The 2×2 dot grip that marks the draggable area of the card header. */
 const GripDots = () => (
   <div className={styles.grip}>
     {[0, 1].map((r) => (
@@ -22,6 +28,11 @@ const GripDots = () => (
   </div>
 );
 
+/**
+ * Glass card that frames a chart inside the grid. Its header doubles as the
+ * GridStack drag handle (`.widget_handle`) and optionally shows an expand
+ * button. Rendered as an `<article>` since each widget is self-contained.
+ */
 export default function WidgetCard({
   title,
   subtitle,
@@ -33,12 +44,12 @@ export default function WidgetCard({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <article
       className={`${styles.card} ${hovered ? styles.card_hovered : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className={`${styles.header} widget_handle`}>
+      <header className={`${styles.header} widget_handle`}>
         <GripDots />
 
         <div className={styles.title_area}>
@@ -71,11 +82,11 @@ export default function WidgetCard({
             </svg>
           </button>
         )}
-      </div>
+      </header>
 
       <div className={`${styles.body} ${noPadding ? "" : styles.body_padded}`}>
         {children}
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,7 +1,7 @@
-import EChart from '../EChart';
-import { patientStats } from '../../../data/mockData';
-import { useTheme, chartColors } from '../../../context/ThemeContext';
-import styles from './PacientesMes.module.css';
+import EChart from './EChart';
+import { patientStats } from '../../data/mockData';
+import { useTheme, chartColors } from '../../context/ThemeContext';
+import styles from '../../styles/PacientesMes.module.css';
 
 export default function PacientesMes() {
   const theme = useTheme();
@@ -60,7 +60,7 @@ export default function PacientesMes() {
   return (
     <div className={styles.root}>
       <div className={styles.gauge_area}>
-        <EChart option={gaugeOption} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }}/>
+        <EChart option={gaugeOption} />
       </div>
       <div className={styles.chips}>
         {[
