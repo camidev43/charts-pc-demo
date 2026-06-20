@@ -1,5 +1,6 @@
 import { useEffect, useRef, CSSProperties } from "react";
-import * as echarts from "echarts";
+import ReactECharts from "echarts-for-react";
+import type { ECharts } from "echarts";
 
 interface Props {
   // Loose like echarts-for-react accepted — the chart files build plain option
@@ -9,52 +10,39 @@ interface Props {
   opts?: { renderer?: "canvas" | "svg" };
 }
 
-// Native ECharts wrapper. We deliberately do NOT use echarts-for-react: its
-// internal size-sensor fought with our ResizeObserver and a plain resize()
-// left the canvas blank even though the container had a real size.
-//
-// Here we own the lifecycle: init once, re-apply the option when it changes,
-// and on every ResizeObserver tick call resize() with the EXPLICIT width/height
-// from the observer entry. Passing explicit dimensions avoids ECharts having to
-// re-measure the DOM (which was racing to 0), so charts paint on first layout.
+// echarts-for-react variant. The blank-on-load bug was NOT echarts-for-react's
+// fault per se — it was calling chart.resize() with no arguments, which makes
+// ECharts re-measure the DOM (which raced to 0). Here we grab the instance via
+// onChartReady and, on every ResizeObserver tick, call resize() with the
+// EXPLICIT width/height from the observer, so ECharts never has to measure.
 export default function EChart({ option, style, opts }: Props) {
-  const elRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<echarts.ECharts | null>(null);
+  const chartRef = useRef<ECharts | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = elRef.current;
+    const el = wrapRef.current;
     if (!el) return;
-    const chart = echarts.init(el, undefined, {
-      renderer: opts?.renderer ?? "canvas",
-    });
-    chartRef.current = chart;
-
-    let logged = false;
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) {
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      const chart = chartRef.current;
+      if (chart && !chart.isDisposed() && width > 0 && height > 0) {
         chart.resize({ width, height });
-        if (!logged) {
-          logged = true;
-          // eslint-disable-next-line no-console
-          console.log(`[EChart] painted ${Math.round(width)}x${Math.round(height)}`);
-        }
       }
     });
     ro.observe(el);
-
-    return () => {
-      ro.disconnect();
-      chart.dispose();
-      chartRef.current = null;
-    };
-    // init only once; renderer never changes at runtime
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => ro.disconnect();
   }, []);
 
-  useEffect(() => {
-    chartRef.current?.setOption(option as echarts.EChartsOption, true);
-  }, [option]);
-
-  return <div ref={elRef} style={{ width: "100%", height: "100%", ...style }} />;
+  return (
+    <div ref={wrapRef} style={{ width: "100%", height: "100%", ...style }}>
+      <ReactECharts
+        option={option}
+        opts={opts}
+        style={{ width: "100%", height: "100%" }}
+        onChartReady={(chart) => {
+          chartRef.current = chart;
+        }}
+      />
+    </div>
+  );
 }
