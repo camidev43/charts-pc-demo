@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import styles from "../styles/WidgetCard.module.css";
-import { ExpandIcon } from "./icons";
+import { ExpandIcon, LockIcon } from "./icons";
 
 interface Props {
   /** Título mostrado en la cabecera de la tarjeta. */
@@ -14,6 +14,8 @@ interface Props {
   accentColor?: string;
   /** Quita el padding por defecto del cuerpo (para tarjetas que pad su contenido). */
   noPadding?: boolean;
+  /** Si es `true`, el widget no se puede mover ni redimensionar; muestra un candado. */
+  locked?: boolean;
 }
 
 /** Los 2×2 puntos que marcan la zona arrastrable de la cabecera. */
@@ -41,6 +43,7 @@ export default function WidgetCard({
   onExpand,
   accentColor = "#5E5CE6",
   noPadding,
+  locked,
 }: Props) {
   const [hovered, setHovered] = useState(false);
 
@@ -50,8 +53,8 @@ export default function WidgetCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <header className={`${styles.header} widget_handle`}>
-        <GripDots />
+      <header className={locked ? styles.header : `${styles.header} widget_handle`}>
+        {locked ? <span className={styles.lock_icon}><LockIcon /></span> : <GripDots />}
 
         <div className={styles.title_area}>
           <div className={styles.title_row}>

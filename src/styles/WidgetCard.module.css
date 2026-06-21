@@ -127,3 +127,12 @@
 .body_padded {
   padding: 0 12px 12px;
 }
+
+.lock_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t-muted);
+  opacity: 0.5;
+  flex-shrink: 0;
+}

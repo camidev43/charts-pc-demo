@@ -47,7 +47,17 @@ export default function EChart({ option, style, renderer = "canvas" }: Props) {
     });
     observer.observe(el);
 
-    return () => observer.disconnect();
+    const ocultarTooltip = () => {
+      const chart = chartRef.current;
+      if (chart && !chart.isDisposed())
+        chart.dispatchAction({ type: "hideTip" });
+    };
+    window.addEventListener("touchmove", ocultarTooltip, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("touchmove", ocultarTooltip);
+    };
   }, []);
 
   return (

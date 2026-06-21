@@ -147,51 +147,40 @@ series: [{ type: "line" /* antes "bar" */, data }]
 
 ---
 
-## 5. Recomendación: charts genéricos reutilizables (a futuro)
+## 5. Usar `EChart` directamente — sin componente intermedio
 
-Hoy cada widget es un chart "preset" (datos + option juntos). Funciona muy bien
-para un dashboard fijo. **Si en el futuro quieres reutilizar el mismo tipo de
-gráfico en muchos lugares** (como tenían antes: "un BarChart, un DonutChart…"),
-el patrón recomendado es crear **componentes genéricos tipados** sobre `EChart`:
+**No necesitas un archivo por cada tipo de gráfico.** `EChart` ya es el primitivo
+final; puedes pasarle cualquier `option` de ECharts desde donde quieras:
 
 ```tsx
-// components/charts/BarChart.tsx
-import EChart from "./EChart";
-import { useChartTheme } from "../../context/ThemeContext";
+// Directo en Dashboard.tsx (o en cualquier componente):
+const { cc, tooltip } = useChartTheme();
 
-interface BarChartProps {
-  labels: string[];
-  values: number[];
-  color?: string;
-}
-
-/** Gráfico de barras genérico y reutilizable. */
-export default function BarChart({ labels, values, color = "#0A84FF" }: BarChartProps) {
-  const { cc, tooltip } = useChartTheme();
-  return (
-    <EChart option={{
-      backgroundColor: "transparent",
-      tooltip: { ...tooltip, trigger: "axis" },
-      xAxis: { type: "category", data: labels, axisLabel: { color: cc.text } },
-      yAxis: { type: "value", axisLabel: { color: cc.text } },
-      series: [{ type: "bar", data: values, itemStyle: { color } }],
-    }} />
-  );
-}
+<EChart option={{
+  backgroundColor: "transparent",
+  tooltip: { ...tooltip, trigger: "axis" },
+  xAxis: { type: "category", data: ["Ene","Feb","Mar"], axisLabel: { color: cc.text } },
+  yAxis: { type: "value" },
+  series: [{ type: "bar", data: [10, 20, 15], itemStyle: { color: "#0A84FF" } }],
+}} />
 ```
 
-Y se consume pasando solo datos:
-```tsx
-<BarChart labels={["Ene","Feb","Mar"]} values={[10, 20, 15]} color="#FBBF24" />
-<DonutChart data={[{ name: "Alto", value: 34 }]} />
-```
+Cambiar a líneas: `type: "bar"` → `type: "line"`.
+Hacer un donut: `type: "pie"` + `radius: ["45%","75%"]`.
+No hace falta `BarChart.tsx` ni `DonutChart.tsx` — **solo el `option`**.
 
-**Ventajas:** reúsas el mismo componente N veces, cambiar de tipo es cambiar
-`<BarChart>` por `<LineChart>` con los mismos datos, y el tema queda dentro del
-genérico. Es el camino natural si esto crece de demo a producto.
+### ¿Cuándo conviene separar en un archivo?
 
-> Para este demo se mantuvieron los presets (ya funcionan y son claros). Los
-> genéricos se pueden ir creando bajo `components/charts/` sin romper nada.
+| Situación | Decisión |
+|-----------|----------|
+| Option simple (pocas líneas, sin estado) | Úsalo inline con `<EChart option={...} />` |
+| Option con estado (ej: tabs semana/mes) | Separa en su propio componente |
+| Option complejo con cálculos (gradientes, colores dinámicos) | Separa para mantener Dashboard limpio |
+| Mismo chart reutilizado en varios lugares | Separa para no duplicar el option |
+
+Los archivos actuales (`IMCBarChart`, `EvolucionChart`, etc.) siguen este criterio:
+los que tienen lógica o estado los merecen; los simples se podrían haber puesto inline.
+Para charts nuevos simples, puedes ir directo sin archivo separado.
 
 ---
 

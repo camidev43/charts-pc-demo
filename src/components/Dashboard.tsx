@@ -105,7 +105,7 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
 
       <section className={styles.grid_wrapper} aria-label="Panel de indicadores">
         <div ref={containerRef} className="grid-stack">
-          {/* Row 1 */}
+          {/* Fila 1 */}
           <GridItem x={0} y={0} w={4} h={3} minH={2}>
             <WidgetCard
               title="Distribución regional"
@@ -157,12 +157,13 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
             </WidgetCard>
           </GridItem>
 
-          <GridItem x={8} y={0} w={4} h={3} minH={2}>
+          <GridItem x={8} y={0} w={4} h={3} minH={2} locked>
             <WidgetCard
               title="Estadísticas clínicas"
               subtitle="Resumen y distribución de riesgo"
               accentColor="#30B0C7"
               noPadding
+              locked
             >
               <div
                 style={{
@@ -176,7 +177,7 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
             </WidgetCard>
           </GridItem>
 
-          {/* Row 2 */}
+          {/* Fila 2 */}
           <GridItem x={0} y={3} w={5} h={3} minH={2}>
             <WidgetCard
               title="Evolución metabólica"
@@ -222,7 +223,7 @@ export default function Dashboard({ onBack, onToggleTheme }: Props) {
             </WidgetCard>
           </GridItem>
 
-          {/* Row 3 */}
+          {/* Fila 3 */}
           <GridItem x={0} y={6} w={3} h={3} minH={2}>
             <WidgetCard
               title="Distribución de riesgo"

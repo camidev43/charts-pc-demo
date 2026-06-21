@@ -146,6 +146,19 @@ body {
   animation: widget_in 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.52s both;
 }
 
+.grid-stack-item[gs-locked="true"] .ui-resizable-se,
+.grid-stack-item[gs-no-resize="true"] .ui-resizable-se {
+  display: none !important;
+}
+.grid-stack-item[gs-locked="true"].ui-draggable-disabled
+  > .grid-stack-item-content,
+.grid-stack-item[gs-no-move="true"].ui-draggable-disabled
+  > .grid-stack-item-content {
+  filter: none !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
 .grid-stack-placeholder > .placeholder-content {
   background: rgba(10, 132, 255, 0.05);
   border: 2px dashed rgba(10, 132, 255, 0.18);
